@@ -94,11 +94,19 @@ implements   ClassVisitor,
                     methodParametersAttribute.parameters                =
                         new ParameterInfo[0];
 
-                    ProgramMethod method =
-                        new ProgramMethod(accessFlags,
-                                          cpe.addUtf8Constant(name),
-                                          cpe.addUtf8Constant(expectMethodArguments(methodParametersAttribute) + type),
-                                          null);
+                    String descriptor = expectMethodArguments(methodParametersAttribute) + type;
+                    ProgramMethod method = (ProgramMethod) programClass.findMethod(name, descriptor);
+                    if (method == null) {
+                        method =
+                                new ProgramMethod(accessFlags,
+                                        cpe.addUtf8Constant(name),
+                                        cpe.addUtf8Constant(descriptor),
+                                        null);
+                    }
+                    else {
+                        method.u2attributesCount = 0;
+                        method.attributes = new Attribute[0];
+                    }
                     method.accept(programClass, this);
 
                     if (methodParametersAttribute.u1parametersCount > 0)
@@ -106,7 +114,8 @@ implements   ClassVisitor,
                         new AttributesEditor(programClass, method, false).addAttribute(methodParametersAttribute);
                     }
 
-                    classEditor.addMethod(method);
+                    if (programClass.findMethod(name, descriptor) == null)
+                        classEditor.addMethod(method);
                 }
                 else
                 {

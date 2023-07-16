@@ -61,12 +61,20 @@ implements   ClassVisitor
 
     public void visitProgramClass(ProgramClass programClass)
     {
-        programClass.u2constantPoolCount = 1;
-        programClass.constantPool        = new Constant[1];
+        if (programClass.constantPool == null) {
+            programClass.u2constantPoolCount = 1;
+            programClass.constantPool        = new Constant[1];
+        }
+        programClass.u2interfacesCount   = 0;
         programClass.u2interfaces        = new int[0];
         programClass.fields              = new ProgramField[0];
-        programClass.methods             = new ProgramMethod[0];
+        if (programClass.methods == null) {
+            programClass.methods             = new ProgramMethod[0];
+            programClass.u2methodsCount      = 0;
+        }
         programClass.attributes          = new Attribute[0];
+        programClass.u2attributesCount   = 0;
+        programClass.u2fieldsCount       = 0;
 
         while (p.nextTtypeEqualsWord())
         {
