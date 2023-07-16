@@ -108,14 +108,6 @@ implements   ClassVisitor,
                         for (Attribute attr : method.attributes) {
                             if (attr instanceof CodeAttribute) {
                                 codeAttribute = (CodeAttribute) attr;
-                                codeAttribute.u2maxStack = 0;
-                                codeAttribute.u2maxLocals = 0;
-                                codeAttribute.u4codeLength = 0;
-                                codeAttribute.code = new byte[0];
-                                codeAttribute.u2exceptionTableLength = 0;
-                                codeAttribute.exceptionTable = new ExceptionInfo[0];
-                                codeAttribute.u2attributesCount = 0;
-                                codeAttribute.attributes = new Attribute[0];
                                 break;
                             }
                         }

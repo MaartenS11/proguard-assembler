@@ -79,11 +79,21 @@ implements   MemberVisitor,
 
         CodeAttribute codeAttribute =
             new CodeAttribute(cpe.addUtf8Constant(Attribute.CODE));
-        boolean hasCodeAttribute = false;
+        boolean alreadyHadCodeAttribute = false;
+        int prevLength = -1;
         for (Attribute attr : programMethod.attributes) {
             if (attr instanceof CodeAttribute) {
                 codeAttribute = (CodeAttribute) attr;
-                hasCodeAttribute = true;
+                alreadyHadCodeAttribute = true;
+                codeAttribute.u2maxStack = 0;
+                codeAttribute.u2maxLocals = 0;
+                prevLength = codeAttribute.code.length;
+                codeAttribute.u4codeLength = 0;
+                codeAttribute.code = new byte[0];
+                codeAttribute.u2exceptionTableLength = 0;
+                codeAttribute.exceptionTable = new ExceptionInfo[0];
+                codeAttribute.u2attributesCount = 0;
+                codeAttribute.attributes = new Attribute[0];
                 break;
             }
         }
@@ -102,8 +112,14 @@ implements   MemberVisitor,
                                      p.lineno(),
                                      e);
         }
-        if (!hasCodeAttribute) {
+        if (!alreadyHadCodeAttribute) {
             new AttributesEditor(programClass, programMethod, false).addAttribute(codeAttribute);
+        } else {
+            assert prevLength <= codeAttribute.code.length;
+        }
+
+        if (prevLength > codeAttribute.code.length) {
+            codeAttribute.code = ArrayUtil.extendArray(codeAttribute.code, prevLength);
         }
 
         p.labels = oldLabels;
