@@ -79,6 +79,14 @@ implements   MemberVisitor,
 
         CodeAttribute codeAttribute =
             new CodeAttribute(cpe.addUtf8Constant(Attribute.CODE));
+        boolean hasCodeAttribute = false;
+        for (Attribute attr : programMethod.attributes) {
+            if (attr instanceof CodeAttribute) {
+                codeAttribute = (CodeAttribute) attr;
+                hasCodeAttribute = true;
+                break;
+            }
+        }
         try
         {
             codeAttribute.accept(programClass, programMethod, this);
@@ -94,8 +102,9 @@ implements   MemberVisitor,
                                      p.lineno(),
                                      e);
         }
-
-        new AttributesEditor(programClass, programMethod, false).addAttribute(codeAttribute);
+        if (!hasCodeAttribute) {
+            new AttributesEditor(programClass, programMethod, false).addAttribute(codeAttribute);
+        }
 
         p.labels = oldLabels;
     }

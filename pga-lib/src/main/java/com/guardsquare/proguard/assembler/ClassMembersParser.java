@@ -104,8 +104,31 @@ implements   ClassVisitor,
                                         null);
                     }
                     else {
-                        method.u2attributesCount = 0;
-                        method.attributes = new Attribute[0];
+                        CodeAttribute codeAttribute = null;
+                        for (Attribute attr : method.attributes) {
+                            if (attr instanceof CodeAttribute) {
+                                codeAttribute = (CodeAttribute) attr;
+                                codeAttribute.u2maxStack = 0;
+                                codeAttribute.u2maxLocals = 0;
+                                codeAttribute.u4codeLength = 0;
+                                codeAttribute.code = new byte[0];
+                                codeAttribute.u2exceptionTableLength = 0;
+                                codeAttribute.exceptionTable = new ExceptionInfo[0];
+                                codeAttribute.u2attributesCount = 0;
+                                codeAttribute.attributes = new Attribute[0];
+                                break;
+                            }
+                        }
+                        if (codeAttribute != null) {
+                            method.u2attributesCount = 1;
+                            method.attributes = new Attribute[] {codeAttribute};
+                        }
+                        else {
+                            method.u2attributesCount = 0;
+                            method.attributes = new Attribute[0];
+                        }
+                        /*method.u2attributesCount = 0;
+                        method.attributes = new Attribute[0];*/
                     }
                     method.accept(programClass, this);
 
